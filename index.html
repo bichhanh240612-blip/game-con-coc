@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Con Cóc</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #dff5d8;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        #game {
+            width: 700px;
+            height: 450px;
+            margin: auto;
+            position: relative;
+            overflow: hidden;
+            background: #8ed081;
+            border: 5px solid #333;
+            border-radius: 15px;
+        }
+
+        #frog {
+            position: absolute;
+            font-size: 55px;
+            left: 100px;
+            top: 200px;
+        }
+
+        #food {
+            position: absolute;
+            font-size: 35px;
+            left: 500px;
+            top: 150px;
+        }
+
+        #info {
+            font-size: 22px;
+            margin: 15px;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🐸 GAME CON CÓC 🐸</h1>
+
+    <div id="info">
+        Điểm: <span id="score">0</span>
+        &nbsp;&nbsp;&nbsp;
+        Thời gian: <span id="time">30</span>s
+    </div>
+
+    <div id="game">
+        <div id="frog">🐸</div>
+        <div id="food">🪰</div>
+    </div>
+
+    <br>
+
+    <button onclick="startGame()">Bắt đầu chơi</button>
+
+    <script>
+        const frog = document.getElementById("frog");
+        const food = document.getElementById("food");
+        const scoreText = document.getElementById("score");
+        const timeText = document.getElementById("time");
+
+        let frogX = 100;
+        let frogY = 200;
+        let score = 0;
+        let time = 30;
+        let playing = false;
+        let timer;
+
+        function startGame() {
+            frogX = 100;
+            frogY = 200;
+            score = 0;
+            time = 30;
+            playing = true;
+
+            scoreText.textContent = score;
+            timeText.textContent = time;
+
+            moveFrog();
+
+            clearInterval(timer);
+
+            timer = setInterval(function() {
+                time--;
+                timeText.textContent = time;
+
+                if (time <= 0) {
+                    clearInterval(timer);
+                    playing = false;
+                    alert("Hết giờ! Bạn được " + score + " điểm.");
+                }
+            }, 1000);
+
+            moveFood();
+        }
+
+        function moveFrog() {
+            frog.style.left = frogX + "px";
+            frog.style.top = frogY + "px";
+        }
+
+        function moveFood() {
+            let x = Math.random() * 620;
+            let y = Math.random() * 370;
+
+            food.style.left = x + "px";
+            food.style.top = y + "px";
+        }
+
+        document.addEventListener("keydown", function(event) {
+
+            if (!playing) return;
+
+            const speed = 15;
+
+            if (event.key === "ArrowUp") {
+                frogY -= speed;
+            }
+
+            if (event.key === "ArrowDown") {
+                frogY += speed;
+            }
+
+            if (event.key === "ArrowLeft") {
+                frogX -= speed;
+            }
+
+            if (event.key === "ArrowRight") {
+                frogX += speed;
+            }
+
+            if (frogX < 0) frogX = 0;
+            if (frogY < 0) frogY = 0;
+            if (frogX > 630) frogX = 630;
+            if (frogY > 380) frogY = 380;
+
+            moveFrog();
+
+            checkEat();
+        });
+
+        function checkEat() {
+
+            let frogRect = frog.getBoundingClientRect();
+            let foodRect = food.getBoundingClientRect();
+
+            if (
+                frogRect.left < foodRect.right &&
+                frogRect.right > foodRect.left &&
+                frogRect.top < foodRect.bottom &&
+                frogRect.bottom > foodRect.top
+            ) {
+                score++;
+                scoreText.textContent = score;
+
+                moveFood();
+            }
+        }
+    </script>
+
+</body>
+</html>
